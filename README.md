@@ -1,17 +1,20 @@
 # Sims Handheld Speedrun Helper
-Program with useful information for practicing Sims handheld speedruns. Requires Python 3.
+Program with useful information for practicing Sims handheld speedruns. Requires Python 3.12 or higher.
 
-* Note: This program is still in VERY early development, and currently only shows locations for NPCs in  Urbz GBA. Will be greatly expanded in the future.
+* Note: This program is still in VERY early development, and currently only shows locations for NPCs in  The Sims Bustin' Out GBA & The Urbz GBA. Will be greatly expanded in the future.
 
 ## Required packages
 
-* [SQLAlchemy](https://www.sqlalchemy.org/) - SQL wrapper for Python
+* [SQLAlchemy 2](https://www.sqlalchemy.org/) - SQL wrapper for Python
+* [tkinter](https://tkdocs.com/) - Cross-platform graphical user interface toolkit
 
 ## How to run
 
-Install SQLAlchemy if you don't have it already:
+Install SQLAlchemy & tkinter if you don't have them already:
 
 `pip install sqlalchemy`
+
+`apt-get install python3-tk`
 
 Run the program from the top-level directory:
 

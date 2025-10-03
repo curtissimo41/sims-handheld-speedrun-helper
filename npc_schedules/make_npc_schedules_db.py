@@ -14,9 +14,10 @@ if __name__ == "__main__":
     with open(f'{game}_npc_schedules.csv', newline='') as npc_schedule:
         reader = csv.reader(npc_schedule, delimiter=',')
         for row in reader:
-            npc = '_'.join(row[0].lower().split())
+            npc = ''.join(row[0].split('.')).lower()  # remove the '.' first for Dan, Luthor, Chet, etc.
+            npc = '_'.join(npc.split())
             new_npc_table = Table(
-                f'{npc}', meta,
+                npc, meta,
                 Column('day', String),
                 Column('hour', Integer),
                 Column('location', String)
@@ -50,11 +51,9 @@ if __name__ == "__main__":
                     case _:
                         pass
 
-                query = insert(new_npc_table).values(
-                    day = day,
-                    hour = hour,
-                    location = location
-                )
+                query = insert(new_npc_table).values(day=day, hour=hour, location=location)
+                with engine.connect() as conn:
+                    conn.execute(query)
+                    conn.commit()
 
-                engine.connect().execute(query)
                 i += 1
