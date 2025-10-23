@@ -1,12 +1,19 @@
 import csv
+import os
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, insert
 
 
 if __name__ == "__main__":
-    game = input('Enter game (sbo/urbz): ').lower()
-    if game != 'sbo' and game != 'urbz':
+    game = input('Enter game (sbo_gba/urbz_gba): ').lower()
+    if game != 'sbo_gba' and game != 'urbz_gba':
         print('Invalid game.')
         exit()
+
+    # remove old db file if one exists
+    try:
+        os.remove(f'{game}_npc_schedules.db')
+    except:
+        pass
 
     engine = create_engine(f'sqlite:///{game}_npc_schedules.db', echo = True)
     meta = MetaData()
@@ -14,8 +21,7 @@ if __name__ == "__main__":
     with open(f'{game}_npc_schedules.csv', newline='') as npc_schedule:
         reader = csv.reader(npc_schedule, delimiter=',')
         for row in reader:
-            npc = ''.join(row[0].split('.')).lower()  # remove the '.' first for Dan, Luthor, Chet, etc.
-            npc = '_'.join(npc.split())
+            npc = '_'.join(row[0].split()).lower()
             new_npc_table = Table(
                 npc, meta,
                 Column('day', String),
@@ -23,10 +29,6 @@ if __name__ == "__main__":
                 Column('location', String)
             )
 
-            try:
-                new_npc_table.drop(engine)
-            except:
-                pass
             meta.create_all(engine)
 
             i = 0
