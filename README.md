@@ -1,7 +1,15 @@
 # Sims Handheld Speedrun Helper
-Program with useful information for practicing Sims handheld speedruns. Requires Python 3.12 or higher.
+Program with useful information for practicing Sims handheld speedruns.
 
-* Note: This program is still in VERY early development, and currently only shows locations for NPCs in  The Sims Bustin' Out GBA & The Urbz GBA. Will be greatly expanded in the future.
+Requires Python 3.12 or
+higher.
+
+Games currently supported:
+
+- The Sims Bustin' Out (GBA)
+- The Urbz: Sims in the City (GBA)
+
+Note: This program is still in VERY early development. Will be greatly expanded in the future.
 
 ## Required packages
 
@@ -10,26 +18,27 @@ Program with useful information for practicing Sims handheld speedruns. Requires
 
 ## How to run
 
-Install SQLAlchemy & tkinter if you don't have them already:
+1. Install SQLAlchemy & tkinter if you don't have them already:
 
-`pip install sqlalchemy`
+    `pip install sqlalchemy`
 
-`apt-get install python3-tk`
+    `apt-get install python3-tk`
 
-Run the program from the top-level directory:
+2. Run the program from the top-level directory:
 
-`python3 main.py`
+    `python3 main.py`
 
-## Compiling the NPC schedule database
+## Compiling the NPC schedule databases (currently SBO [GBA] and Urbz [GBA] only)
 
-The NPC schedule .csv files and databases have already been provided for you, but if you need to rebuild them, you can do so with make_npc_schedules_db.py
+The NPC schedule .csv files and databases have already been provided for you, but if you need to
+make changes and rebuild them, you can do so with npc_schedules/make_npc_schedules_db.py
 
-1. Make edits to your .csv file and place it in the npc_schedules directory with these parameters:
+1. Make edits to your .csv file in the npc_schedules directory with these parameters:
 
-    - Filename - \<**sbo** OR **urbz**\>_npc_schedules.csv
+    - Filename - \<**sbo** OR **urbz**\>_<**console**>_npc_schedules.csv
     - Row format - \<NPC name\>,location1,location2,...,location168
 
-    Example Filename: `urbz_npc_schedules.csv`
+    Example Filename: `urbz_gba_npc_schedules.csv`
 
     Example Row: `Berkeley Clodd,Urbania,Glasstown,Carnival,...,Urbania`
 
@@ -38,3 +47,59 @@ The NPC schedule .csv files and databases have already been provided for you, bu
     `python3 make_npc_schedules_db.py`
     
     from within the npc_schedules directory.
+
+## Compiling the NPC interactions databases (currently Urbz [GBA] only)
+
+The NPC interactions .csv files and databases have already been provided for you, but if you need to
+make changes and rebuild them, you can do so with npc_interactions/make_npc_interactions_db.py
+
+1. Make edits to your .csv file in the npc_interactions directory with these parameters:
+
+    - Filename - \<**urbz**\>_<**console**>_npc_interactions.csv
+    - Row format - \<NPC name\>,aliens,annoy,apologize...,world
+        - Note: the interactions are handled in alphabetical order, from 'Aliens' to 'World'
+
+    Example Filename: `urbz_gba_npc_interactions.csv`
+
+    Example Row: `Berkeley Clodd,1,0,-2,...,0`
+
+2. Open a terminal and run:
+
+    `python3 make_npc_interactions_db.py`
+    
+    from within the npc_interactions directory.
+
+## TODO
+
+- Add `The Urbz: Sims in the City (DS)`:
+    - figure out character schedules - some NPCs change locations after Splicer Island is fixed
+    - add missing character portraits/sprites:
+        - Bayou Boo (Vampire)
+        - Ephram Earl (Alive)
+        - Harlan King (Pre-Recorded Message)
+        - Heidi Shadows (Cheat Ninja)
+- Add `The Sims 2 (GBA)`:
+    - add all character portraits
+    - add locations for all characters on a per-episode basis
+    - add interaction percentages for each character
+    - add price ranges for collectibles
+    - more TBD
+- Add `The Sims 2 (DS)`:
+    - finish a casual playthrough to see how the game works first...
+    - add all character portraits
+    - more TBD
+- `The Sims Bustin' Out (GBA)`:
+    - find a good way to add all interactions (dropdown to select which chapter you are in, maybe?)
+    - add missing character portraits/sprites:
+        - Daddy Bigbucks
+        - 'Mad' Willy Hurtzya
+        - Nicki Knack
+        - Olde Salty
+        - Velocirooster
+        - Heidi Shadows (Cheat Ninja)
+- `The Urbz: Sims in the City (GBA)`:
+    - consider adding all hidden Xizzle Bead locations with screenshots
+    - add missing character portraits/sprites:
+        - Heidi Shadows (Cheat Ninja)
+- Determine if there is any need to add `The Sims Bustin' Out (N-Gage)`
+- more TBD
