@@ -81,7 +81,7 @@ class helper_gui:
 
         # window properties
         self.main.title('Sims Handheld Speedrun Helper')
-        self.main.geometry('850x760')
+        self.main.geometry('850x850')
         self.main.resizable(False, False)
 
         # Game selection row
@@ -345,17 +345,27 @@ class helper_gui:
         # completely clear previous interactions grid to start
         self.interactions_frame.destroy()
         self.interactions_frame = ttk.Frame(self.main)
+
+        # vertical separators between Positive, Neutral, and Negative columns
         self.separator_v1 = ttk.Separator(self.interactions_frame, orient=tk.VERTICAL)
         self.separator_v2 = ttk.Separator(self.interactions_frame, orient=tk.VERTICAL)
         pos_interactions_label = ttk.Label(self.interactions_frame, width=16,
                                            text='Positive Topics: ', foreground='darkgreen')
         pos_interactions_label.grid(column=0, row=0)
+        self.separator_h1i = ttk.Separator(self.interactions_frame, orient=tk.HORIZONTAL)
+        self.separator_h1i.grid(column=0, row=1, columnspan=2, sticky=tk.EW, pady=5)
+
         neut_interactions_label = ttk.Label(self.interactions_frame, width=16,
-                                            text='Neutral Topics: ', foreground='darkblue')
+                                            text='Neutral Topics: (+0)', foreground='darkblue')
         neut_interactions_label.grid(column=3, row=0)
+        self.separator_h2i = ttk.Separator(self.interactions_frame, orient=tk.HORIZONTAL)
+        self.separator_h2i.grid(column=3, row=1, columnspan=2, sticky=tk.EW, pady=5)
+
         neg_interactions_label = ttk.Label(self.interactions_frame, width=16,
                                            text='Negative Topics: ', foreground='darkred')
         neg_interactions_label.grid(column=6, row=0)
+        self.separator_h3i = ttk.Separator(self.interactions_frame, orient=tk.HORIZONTAL)
+        self.separator_h3i.grid(column=6, row=1, columnspan=2, sticky=tk.EW, pady=5)
 
         if game == 'sbo_gba':
             return
@@ -370,32 +380,73 @@ class helper_gui:
                 Column('interaction', String),
                 Column('result', Integer)
             )
-            s = select(interactions)
+            s = select(interactions).order_by(interactions.c.result.desc())
             result = engine.connect().execute(s).fetchall()
             engine.dispose()
         except:
             return
 
-        pos_count, neut_count, neg_count = 0, 0, 0
-        for inter in result:
-            if inter[1] > 0:
-                text = f'{inter[0]} ({inter[1]})'
-                row, column = divmod(pos_count, 2)
-                pos_inter = ttk.Label(self.interactions_frame, width=15, text=text)
-                pos_inter.grid(column=column, row=row+1, sticky=tk.W)
-                pos_count += 1
-            elif inter[1] == 0:
-                text = f'{inter[0]} ({inter[1]})'
-                row, column = divmod(neut_count, 2)
-                neut_inter = ttk.Label(self.interactions_frame, width=16, text=text)
-                neut_inter.grid(column=column+3, row=row+1, sticky=tk.W)
-                neut_count += 1
+        pos_inter_dict, neut_inter_list, neg_inter_dict = {}, [], {}
+        for interaction in result:
+            if interaction[1] > 0:
+                if interaction[1] not in pos_inter_dict:
+                    pos_inter_dict[interaction[1]] = [interaction[0]]
+                else:
+                    pos_inter_dict[interaction[1]] += [interaction[0]]
+            elif interaction[1] == 0:
+                neut_inter_list.append(interaction[0])
             else:
-                text = f'{inter[0]} ({inter[1]})'
+                if interaction[1] not in neg_inter_dict:
+                    neg_inter_dict[interaction[1]] = [interaction[0]]
+                else:
+                    neg_inter_dict[interaction[1]] += [interaction[0]]
+
+        pos_count, neut_count, neg_count = 0, 0, 0
+
+        # Positive interactions
+        for key in pos_inter_dict:
+            row, column = divmod(pos_count, 2)
+            interaction_value = ttk.Label(self.interactions_frame, width=15, text=f'+{key}',
+                                          foreground='green')
+            interaction_value.grid(column=0, row=row+2, sticky=tk.W)
+
+            for interaction in pos_inter_dict[key]:
+                text = f'{interaction}'
+                row, column = divmod(pos_count, 2)
+                pos_interaction = ttk.Label(self.interactions_frame, width=15, text=text)
+                pos_interaction.grid(column=column, row=row+3, sticky=tk.W)
+                pos_count += 1
+            if pos_count % 2 == 1:
+                pos_count += 3
+            else:
+                pos_count += 2
+
+        # Neutral interactions
+        for interaction in neut_inter_list:
+            text = f'{interaction}'
+            row, column = divmod(neut_count, 2)
+            neut_inter = ttk.Label(self.interactions_frame, width=15, text=text)
+            neut_inter.grid(column=column+3, row=row+2, sticky=tk.W)
+            neut_count += 1
+
+        # Negative interactions
+        for key in neg_inter_dict:
+            row, column = divmod(neg_count, 2)
+            interaction_value = ttk.Label(self.interactions_frame, width=15, text=f'{key}',
+                                          foreground='red')
+            interaction_value.grid(column=6, row=row+2, sticky=tk.W)
+
+            for interaction in neg_inter_dict[key]:
+                text = f'{interaction}'
                 row, column = divmod(neg_count, 2)
-                neg_inter = ttk.Label(self.interactions_frame, width=16, text=text)
-                neg_inter.grid(column=column+6, row=row+1, sticky=tk.W)
+                neg_interaction = ttk.Label(self.interactions_frame, width=15, text=text)
+                neg_interaction.grid(column=column+6, row=row+3, sticky=tk.W)
                 neg_count += 1
+            if neg_count % 2 == 1:
+                neg_count += 3
+            else:
+                neg_count += 2
+
         self.separator_v1.grid(column=2, row=1, rowspan=-(neut_count//-2), sticky=tk.NS, padx=5)
         self.separator_v2.grid(column=5, row=1, rowspan=-(neg_count//-2), sticky=tk.NS, padx=5)
 
